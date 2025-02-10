@@ -1,1 +1,217 @@
-...
+#include <iostream>
+#include <time.h>
+
+// Define some ANSI color codes
+const std::string RESET = "\033[0m";
+const std::string RED = "\033[31m";
+const std::string GREEN = "\033[32m";
+const std::string YELLOW = "\033[33m";
+const std::string BLUE = "\033[34m";
+const std::string MAGENTA = "\033[35m";
+const std::string CYAN = "\033[36m";
+const std::string WHITE = "\033[37m";
+const std::string BOLD = "\033[1m";
+
+
+using namespace std;
+
+// swaps values at locations i and j within array a
+void swap(int* a, int i, int j){
+  cout<<"swapping "<<i<<" "<<j<<" "<<a[i]<<" and "<<a[j]<<endl;
+  int temp = a[i];
+  
+  a[i] = a[j];
+  a[j] = temp;
+}
+
+// Function to perform Bubble Sort on an array
+void bubbleSort(int* arr, int n) {
+    bool swapped;
+
+    // Loop through all elements of the array
+    for (int i = 0; i < n - 1; ++i) {
+        swapped = false; // Initially, no elements are swapped
+
+        // Inner loop for comparing adjacent elements
+        for (int j = 0; j < n - i - 1; ++j) {
+            // Compare adjacent elements
+            if (arr[j] > arr[j + 1]) {
+                // Swap if elements are in the wrong order
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+                swapped = true; // Set swapped to true if any elements were swapped
+            }
+        }
+
+        // If no elements were swapped, the array is already sorted
+        if (!swapped) {
+            break; // Break out of the loop to avoid unnecessary iterations
+        }
+    }
+}
+
+// Function to perform Selection Sort on an array
+void selectionSort(int* arr, int n) {
+    // Loop through each element of the array
+    for (int i = 0; i < n - 1; ++i) {
+        // Find the minimum element in the unsorted part of the array
+        int minIndex = i;
+        for (int j = i + 1; j < n; ++j) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j; // Update the index of the minimum element
+            }
+        }
+
+        // Swap the found minimum element with the first element of the unsorted part
+        if (minIndex != i) {
+            int temp = arr[minIndex];
+            arr[minIndex] = arr[i];
+            arr[i] = temp;
+        }
+    }
+}
+
+// Checks to see if a value exists in our array of nums
+// Extremely wasteful, but it works
+bool exists(int *a, int size, int r) {
+  for (int i = 0; i < size; i++) {
+    if (a[i] == r) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// loads unique numbers into an array of a
+// given size. One change you could make is
+// to change the 100 to a `max` variable that
+// is passed in (e.g int max=100)
+void loadUnique(int *a, int size) {
+  int r;
+  for (int i = 0; i < size; i++) {
+    r = rand() % 100;
+    while (exists(a, size, r)) {
+      r = rand() % 100;
+    }
+    a[i] = r;
+  }
+}
+
+// prints our array out with index numbers below
+// it. 
+void printArray(int *a, int size, int foundIndex = -1) {
+  string index;
+
+  cout << BLUE;
+  for (int i = 0; i < size; i++) {
+    if (a[i] < 10) {
+      index = "0" + to_string(a[i]);
+    } else {
+      index = to_string(a[i]);
+    }
+    if (foundIndex > -1 && i == foundIndex) {
+      cout << BOLD << MAGENTA << index << " " << RESET << BLUE;
+    } else {
+      cout << index << " ";
+    }
+  }
+  cout << RESET << endl;
+  cout << GREEN;
+  for (int i = 0; i < size; i++) {
+    if (i < 10) {
+      index = "0" + to_string(i);
+    } else {
+      index = to_string(i);
+    }
+    if (foundIndex > -1 && i == foundIndex) {
+      cout << BOLD << MAGENTA << index << " " << RESET << GREEN;
+    } else {
+      cout << index << " ";
+    }
+  }
+  cout << endl << RESET;
+}
+
+// Binary search implementation
+int binary_search(int *a, int size, int key) {
+  int l, r, m;
+
+  l = 0;
+  r = size - 1;
+  m = (l + r) / 2;
+
+  while (1) {
+    if (a[l] == key) {
+      return l;
+    }
+    if (a[r] == key) {
+      return r;
+    }
+    if (a[m] == key) {
+      return m;
+    }
+
+    if (r == m && m == l) {
+      return -1;
+    }
+
+    if (key > a[m]) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+
+    m = (l + r) / 2;
+  }
+}
+
+// Delete method to free the dynamically allocated array
+void deleteArray(int* a) {
+  delete[] a;  // Deallocate the memory for the array
+}
+
+int main() {
+  srand(345345);
+  int size = 10;  // size of the array
+  int *a = new int[size]; // new dynamic array of size
+  int key = 0;  // key to look for
+  int found = 0;  // found index location when searching, -1 if not found
+
+  loadUnique(a, size);  // load array with unique ints
+  printArray(a, size);  // print the array
+  cout << endl;
+  bubbleSort(a, size);  // sort the array (must be sorted to search)
+  printArray(a, size);  // print the array again
+  cout << endl;
+
+  // Searching for a key
+  key = 1111;  // a key that doesn't exist
+  
+  found = binary_search(a, size, key);  // search for the key
+
+  if (found >= 0) {
+    printArray(a, size, found);
+    cout << "key: " << key << " found at index " << found << endl;
+  } else {
+    cout << RED << "key: " << key << " NOT FOUND" << RESET << endl;
+  }
+  cout << endl;
+
+  key = 26;
+
+  found = binary_search(a, size, key);  // search for the key
+
+  if (found >= 0) {
+    printArray(a, size, found);
+    cout << "key: " << key << " found at index " << found << endl;
+  } else {
+    cout << RED << "key: " << key << " NOT FOUND" << RESET << endl;
+  }
+  cout << endl;
+
+  // Delete the dynamically allocated array to prevent memory leaks
+  deleteArray(a);  // clean up memory
+
+  return 0;
+}
